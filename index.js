@@ -70,7 +70,7 @@ const addManager = () => {
         {
             type: 'confirm',
             name: 'confirmAddManager',
-            message: 'Would you like to add more team members?',
+            message: 'Would you like to add more managers?',
             default: false
         }
       ])
