@@ -1,5 +1,5 @@
 //require utils
-const { writeFile} = require('./utils/generate-site.js');
+const { writeFile, copyFile } = require('./utils/generate-site.js');
 const generatePage = require('./src/page-template');
 
 const Manager = require('./lib/Manager');
@@ -44,14 +44,15 @@ const addManager = () => {
             type: 'input',
             name: 'email',
             message: "Please enter the manager's email.",
-            validate: emailInput => {
-              if (emailInput) {
-                  return true;
-              } else {
-                  console.log ("Please enter the manager's email!");
-                  return false; 
-              }
-          }
+            validate: email => {
+                valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                if (valid) {
+                    return true;
+                } else {
+                    console.log ('Please enter a valid email!');
+                    return false; 
+                }
+            }
         },
         {
             type: 'input',
@@ -67,18 +68,19 @@ const addManager = () => {
             }
         },
         {
-          type: 'confirm',
-          name: 'confirmAddManager',
-          message: 'Would you like to enter another manager?',
-          default: false
+            type: 'confirm',
+            name: 'confirmAddManager',
+            message: 'Would you like to add more team members?',
+            default: false
         }
       ])
     .then(managerInput => {
-        const  { name, id, email, officeNumber } = managerInput; 
+        const  { name, id, email, officeNumber, confirmAddManager } = managerInput; 
         const manager = new Manager (name, id, email, officeNumber);
 
         teamArray.push(manager); 
         console.log(manager); 
+
       if (confirmAddManager) {
           return addManager(teamArray); 
       } else {
@@ -118,8 +120,8 @@ const addEmployee = () => {
             type: 'input',
             name: 'id',
             message: "Please enter the employee's ID.",
-            validate: nameInput => {
-                if  (isNaN(nameInput)) {
+            validate: idInput => {
+                if  (isNaN(idInput)) {
                     console.log ("Please enter the employee's ID!")
                     return false; 
                 } else {
@@ -132,7 +134,7 @@ const addEmployee = () => {
             name: 'email',
             message: "Please enter the employee's email.",
             validate: email => {
-                valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+                valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
                 if (valid) {
                     return true;
                 } else {
@@ -146,8 +148,8 @@ const addEmployee = () => {
             name: 'github',
             message: "Please enter the employee's github username.",
             when: (input) => input.role === "Engineer",
-            validate: nameInput => {
-                if (nameInput ) {
+            validate: gitInput => {
+                if (gitInput ) {
                     return true;
                 } else {
                     console.log ("Please enter the employee's github username!")
@@ -159,8 +161,8 @@ const addEmployee = () => {
             name: 'school',
             message: "Please enter the intern's school",
             when: (input) => input.role === "Intern",
-            validate: nameInput => {
-                if (nameInput) {
+            validate: eduInput => {
+                if (eduInput) {
                     return true;
                 } else {
                     console.log ("Please enter the intern's school!")
@@ -210,6 +212,13 @@ addManager()
   .then(pageHTML => {
     return writeFile(pageHTML);
   })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
   .catch(err => {
- console.log(err);
+    console.log(err);
   });

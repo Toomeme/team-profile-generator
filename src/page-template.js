@@ -1,97 +1,137 @@
-// create the about section
-const generateAbout = aboutText => {
-  if (!aboutText) {
-    return '';
+// We need 3 functions to ensure the unique attributes of each object get displayed correctly. 
+//There may be a way to consolidate using a switch but the 3 functions are more readable. 
+
+// create manager card
+const generateManager = function (manager) {
+  return `
+  <div class="col-sm-6">
+      <div class="card h-100" style="width: 18rem;">
+          <div class="card-header">
+              <h3>${manager.name}</h3>
+              <h4>Manager</h4>
+          </div>
+          <div class="card-body">
+              <p class="id">ID: ${manager.id}</p>
+              <p class="email">Email: <a href="mailto:${manager.email}">${manager.email}</a></p>
+              <p class="office">Office Number: ${manager.officeNumber}</p>
+          </div>
+      </div>
+  </div>
+  `;
+}
+
+// create Engineer card
+const generateEngineer = function (engineer) {
+  return `
+  <div class="col-sm-6">
+      <div class="card h-100" style="width: 18rem;">
+          <div class="card-header">
+              <h3>${engineer.name}</h3>
+              <h4>Engineer</h4>
+          </div>
+          <div class="card-body">
+              <p class="id">ID: ${engineer.id}</p>
+              <p class="email">Email: <a href="mailto:${engineer.email}">${engineer.email}</a></p>
+              <p class="github">Github: <a href="https://github.com/${engineer.github}">${engineer.github}</a></p>
+          </div>
+      </div>
+  </div>
+  `
+}
+
+// create Intern card 
+const generateIntern = function (intern) {
+  return `
+  <div class="col-sm-6">
+      <div class="card h-100" style="width: 18rem;">
+          <div class="card-header">
+              <h3>${intern.name}</h3>
+              <h4>Intern</h4>
+          </div>
+          <div class="card-body">
+              <p class="id">ID: ${intern.id}</p>
+              <p class="email">Email:<a href="mailto:${intern.email}">${intern.email}</a></p>
+              <p class="school">School: ${intern.school}</p>
+          </div>
+  </div>
+</div>
+  `
+};
+
+// push array to page 
+generateHTML = (data) => {
+
+  // initialize array for cards 
+  pageArray = []; 
+
+  for (let i = 0; i < data.length; i++) {
+      const employee = data[i];
+      const role = employee.getRole(); 
+
+
+      //manager function
+      if (role === 'Manager') {
+          const managerCard = generateManager(employee);
+
+          pageArray.push(managerCard);
+      }
+
+      // engineer function
+      if (role === 'Engineer') {
+          const engineerCard = generateEngineer(employee);
+
+          pageArray.push(engineerCard);
+      }
+
+      // intern function 
+      if (role === 'Intern') {
+          const internCard = generateIntern(employee);
+
+          pageArray.push(internCard);
+      }
+      
   }
 
-  return `
-    <section class="my-3" id="about">
-      <h2 class="text-dark bg-primary p-2 display-inline-block">About Me</h2>
-      <p>${aboutText}</p>
-    </section>
-  `;
-};
+  // joining strings 
+  const employeeCards = pageArray.join('')
 
-const generateProjects = projectsArr => {
-  return `
-    <section class="my-3" id="portfolio">
-      <h2 class="text-dark bg-primary p-2 display-inline-block">Work</h2>
-      <div class="flex-row justify-space-between">
-      ${projectsArr
-        .filter(({ feature }) => feature)
-        .map(({ name, description, languages, link }) => {
-          return `
-          <div class="col-12 mb-2 bg-dark text-light p-3">
-            <h3 class="portfolio-item-title text-light">${name}</h3>
-            <h5 class="portfolio-languages">
-              Built With:
-              ${languages.join(', ')}
-            </h5>
-            <p>${description}</p>
-            <a href="${link}" class="btn"><i class="fab fa-github mr-2"></i>View Project on GitHub</a>
-          </div>
-        `;
-        })
-        .join('')}
+  // return to generated page
+  const generateTeam = generateTeamPage(employeeCards); 
+  return generateTeam;
 
-      ${projectsArr
-        .filter(({ feature }) => !feature)
-        .map(({ name, description, languages, link }) => {
-          return `
-          <div class="col-12 col-md-6 mb-2 bg-dark text-light p-3 flex-column">
-            <h3 class="portfolio-item-title text-light">${name}</h3>
-            <h5 class="portfolio-languages">
-              Built With:
-              ${languages.join(', ')}
-            </h5>
-            <p>${description}</p>
-            <a href="${link}" class="btn mt-auto"><i class="fab fa-github mr-2"></i>View Project on GitHub</a>
-          </div>
-        `;
-        })
-        .join('')}
-      </div>
-    </section>
-  `;
-};
+}
 
-module.exports = templateData => {
-  // destructure page data by section
-  const { projects, about, ...header } = templateData;
-
-  return `
-  <!DOCTYPE html>
-  <html lang="en">
-
-  <head>
+// generate html page 
+const generateTeamPage = function (employeeCards) {   
+return`
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Portfolio Demo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Public+Sans:300i,300,500&display=swap" rel="stylesheet">
+    <title>Team Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="style.css">
-  </head>
-
-  <body>
+</head>
+<body>
     <header>
-      <div class="container flex-row justify-space-between align-center py-3">
-        <h1 class="page-title text-secondary bg-dark py-2 px-3">${header.name}</h1>
-        <nav class="flex-row">
-          <a class="ml-2 my-1 px-2 py-1 bg-secondary text-dark" href="https://github.com/${
-            header.github
-          }">GitHub</a>
+        <nav class="navbar" id="navbar">
+            <span class="navbar-brand mb-0 h1 w-100 text-center" id="navbar-text">Team Profile</span>
         </nav>
-      </div>
     </header>
-    <main class="container my-5">
-      ${generateAbout(about)}
-      ${generateProjects(projects)}
+    <main>
+        <div class="container">
+            <div class="row justify-content-center" id="employee-cards">
+                <!--Employee Cards-->
+                ${employeeCards}
+            </div>
+        </div>
     </main>
-    <footer class="container text-center py-3">
-      <h3 class="text-dark">&copy; ${new Date().getFullYear()} by ${header.name}</h3>
-    </footer>
-  </body>
-  </html>
-  `;
-};
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</html>
+`;
+}
+
+// export to index
+module.exports = generateHTML; 
